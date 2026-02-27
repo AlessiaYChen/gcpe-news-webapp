@@ -4,9 +4,9 @@
 @{
     var dob = new System.DateTime(1948, 11, 14);
     var now = DateTime.Now;
-    if (@Startup.granvilleTestDate != DateTime.MinValue)
+    if (@Gov.News.Website.AppState.GranvilleTestDate != DateTime.MinValue)
     {
-        now = @Startup.granvilleTestDate;
+        now = @Gov.News.Website.AppState.GranvilleTestDate;
     }
     var age = now.Year - dob.Year;
 

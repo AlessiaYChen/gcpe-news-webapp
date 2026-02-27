@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Gov.News.Website.Helpers;
 using Gov.News.Website.Middleware;
@@ -139,17 +140,15 @@ namespace Gov.News.Website.Controllers.Shared
             dynamic searchServiceResult = null;
             using (Profiler.StepStatic("Calling search.gov.bc.ca"))
             {
-                System.Net.WebRequest request = System.Net.WebRequest.Create(requestPath);
+                using var client = new HttpClient();
+                using var request = new HttpRequestMessage(HttpMethod.Get, requestPath);
                 request.Headers.Add("api-key", Properties.Settings.Default.AzureSearchKey);
 
-                using (System.Net.WebResponse response = await request.GetResponseAsync())
-                {
-                    using (System.IO.StreamReader reader = new System.IO.StreamReader(response.GetResponseStream()))
-                    {
-                        string res = reader.ReadToEnd();
-                        searchServiceResult = JsonConvert.DeserializeObject<dynamic>(res);
-                    }
-                }
+                using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
+
+                var res = await response.Content.ReadAsStringAsync();
+                searchServiceResult = JsonConvert.DeserializeObject<dynamic>(res);
             }
 
             model.Count = searchServiceResult["@odata.count"];

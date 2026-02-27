@@ -2,7 +2,7 @@
 using Microsoft.AspNet.SignalR;
 # endif
 using System.Collections.Generic;
-using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -16,13 +16,15 @@ namespace Gov.News.Website.Hubs
     {
         private Task _pollingTask;
         private CancellationTokenSource _cts;
-        private Repository _repository;
+        private readonly Repository _repository;
+        private readonly HttpClient _httpClient;
         //private static volatile bool _isWebcasting = false;
         private static volatile bool _isGranvilleLive = false;
 
-        public LiveHub(Repository repository)
+        public LiveHub(Repository repository, IHttpClientFactory httpClientFactory)
         {
             _repository = repository;
+            _httpClient = httpClientFactory.CreateClient();
         }
 
         public static bool IsGranvilleLive
@@ -38,21 +40,24 @@ namespace Gov.News.Website.Hubs
 
         // checks whether the url passed in is accessible via a http header request
         // if not accessible it returns false
-        private static async Task<bool> CheckAlive(string url)
+        private async Task<bool> CheckAlive(string url)
         {
-            var request = WebRequest.Create(url);
-            request.Method = "GET"; //HEAD was an option until it became unavailable with 405 error
             try
             {
-                using (var response = await request.GetResponseAsync())
-                {
-                    return true;
-                }
+                using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                return response.IsSuccessStatusCode;
             }
-            catch (WebException)
+            catch (HttpRequestException)
             {
                 /*  This is the expected path if the content is not available.
-                    A WebException will be thrown if the status of the response is not `200 OK` */
+                    A HttpRequestException will be thrown if the status is not successful or if the request fails. */
+                return false;
+            }
+            catch (TaskCanceledException)
+            {
+                /*  This is the expected path if the content is not available.
+                    A TaskCanceledException can be thrown if the request times out. */
                 return false;
             }
         }

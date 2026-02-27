@@ -332,16 +332,5 @@ namespace Gov.News.Website.Controllers.Shared
             throw new NotImplementedException();
         }
 
-        class Replacement : IComparable
-        {
-            public int Start;
-            public int End;
-            public string Text;
-
-            public int CompareTo(object obj)
-            {
-                return -Start.CompareTo(((Replacement)obj).Start);
-            }
-        }
     }
 }

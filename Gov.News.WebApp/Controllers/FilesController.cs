@@ -46,7 +46,7 @@ namespace Gov.News.Website.Controllers
 
                 return File(stream, contentType);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 //Will redirect to search page if file doesn't exist or there is an error.
             }

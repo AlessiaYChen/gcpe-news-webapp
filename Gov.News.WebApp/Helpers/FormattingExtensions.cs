@@ -45,7 +45,7 @@ namespace Gov.News.Website.Helpers
             {
                 tzi = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
             }
-            catch (TimeZoneNotFoundException e)
+            catch (TimeZoneNotFoundException)
             {
                 tzi = TimeZoneInfo.FindSystemTimeZoneById("PST8PDT");
             }
@@ -139,7 +139,7 @@ namespace Gov.News.Website.Helpers
 
                 return new HtmlString(bodyHtml);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Program.ReportException(null, ex);
                 return bodyHtmlString;

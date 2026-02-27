@@ -150,7 +150,6 @@ namespace Gov.News.Website.Helpers
             return new HtmlString(newhtml);
         }
 
-        [Obsolete]
         public static HtmlString RenderPostAssetThumbnail(Uri uri, bool renderFlickrAsBackground = false, string altText = "")
         {
             string assetHtml = "";

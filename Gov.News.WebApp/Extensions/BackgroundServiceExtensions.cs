@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace Gov.News.Website
 
         public static void UseBackgroundService(this IApplicationBuilder builder, Func<CancellationToken, Task> service)
         {
-            var lifetime = (IApplicationLifetime)builder.ApplicationServices.GetService(typeof(IApplicationLifetime));
+            var lifetime = (IHostApplicationLifetime)builder.ApplicationServices.GetService(typeof(IHostApplicationLifetime));
 
             var stoppingToken = lifetime.ApplicationStopping;
             var stoppedToken = lifetime.ApplicationStopped;
